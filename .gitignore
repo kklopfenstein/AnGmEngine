@@ -11,3 +11,4 @@ gen/
 .settings
 target/
 .project
+.settings/
