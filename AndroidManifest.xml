@@ -11,6 +11,10 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.NoTitleBar" android:debuggable="true">
+        <uses-library android:name="android.test.runner" />
     </application>
+    
+    <instrumentation android:name="android.test.InstrumentationTestRunner"
+       android:targetPackage="com.test.kklop.angmengine" android:label="AndGmEngine Tests" />
 
 </manifest>

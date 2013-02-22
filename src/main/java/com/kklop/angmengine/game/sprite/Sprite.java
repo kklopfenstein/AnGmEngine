@@ -3,6 +3,7 @@ package com.kklop.angmengine.game.sprite;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.PointF;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
@@ -124,6 +125,14 @@ public abstract class Sprite {
 			y -= difY;
 		}
 	}*/
+	
+	public boolean collided(Sprite sprite) {
+		if(this.getMaxX() < sprite.getX()) return false;
+		if(this.getX() > sprite.getMaxX()) return false;
+		if(this.getMaxY() < sprite.getY()) return false;
+		if(this.getY() > sprite.getY()) return false;
+		return true;
+	}
 
 	/**
 	 * Move sprite to center
@@ -149,6 +158,51 @@ public abstract class Sprite {
 	public void setBitmap(Bitmap bitmap) {
 		this.bitmap = bitmap;
 	}
+	
+	public int getWidth() {
+		int result = 0;
+		if(bitmap != null) {
+			result = bitmap.getWidth();
+		}
+		return result;
+	}
+	
+	public int getHeight() {
+		int result = 0;
+		if(bitmap != null) {
+			result = bitmap.getHeight();
+		}
+		return result;
+	}
+	
+	public PointF getTopLeftCrnr() {
+		return new PointF(getX(), getY());
+	}
+	
+	public PointF getTopRightCrnr() {
+		PointF p = null;
+		if(bitmap != null) {
+			p = new PointF(getX(), getY() + bitmap.getWidth());
+		}
+		return p;
+	}
+	
+	public PointF getBotLeftCrnr() {
+		PointF p = null;
+		if(bitmap != null) {
+			p = new PointF(getX(), getY()+ bitmap.getHeight());
+		}
+		return p;
+	}
+	
+	public PointF getBotRightCrnr() {
+		PointF p = null;
+		if(bitmap != null) {
+			p = new PointF(getX() + bitmap.getWidth(), 
+					getY() + bitmap.getHeight());
+		}
+		return p;
+	}
 
 	public float getX() {
 		return x;
@@ -166,6 +220,13 @@ public abstract class Sprite {
 		this.y = y;
 	}
 	
+	public float getMaxX() {
+		return x + bitmap.getWidth();
+	}
+	
+	public float getMaxY() {
+		return y + bitmap.getHeight();
+	}
 	
 	public float getCompY() {
 		return y + bitmap.getHeight();
