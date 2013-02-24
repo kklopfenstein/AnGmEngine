@@ -39,6 +39,28 @@ public abstract class Sprite {
 		Log.i(TAG, "Draw not implemented for Sprite");
 	}
 	
+	/**
+	 * Init sprite without the context, mostly
+	 * used for testing. Can't mock the window
+	 * service without API level 17 :(
+	 * @param bitmap
+	 * @param x
+	 * @param y
+	 * @param fps
+	 */
+	public Sprite(Bitmap bitmap, float x, float y, int fps) {
+		this.bitmap = bitmap;
+		this.x = x;
+		this.y = y;
+		this.framePeriod = 1000/fps;
+		this.frameTicker = 0l;
+		
+		// probably should get set by constructor I guess
+		targetX = 0;
+		targetY = 0;
+		state = SPRITE_STATE.STOPPED;
+	}
+	
 	public Sprite(Context context, Bitmap bitmap, float x, float y, int fps) {
 		this.bitmap = bitmap;
 		this.x = x;

@@ -5,7 +5,7 @@ package com.kklop.angmengine.game.exception;
  * @author Kevin Klopfenstein
  *
  */
-public class GameException extends Throwable {
+public class GameException extends Exception {
 
 	/**
 	 * 

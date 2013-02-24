@@ -105,10 +105,10 @@ public class Grid {
 	 * @throws GridException
 	 */
 	private int getGridNumForXY(PointF p) throws GridException {
-		int gridY = Float.valueOf(p.y/this.size).intValue();
-		int gridX = Float.valueOf(p.x/this.size).intValue();
+		Double gridY = Math.floor((float) p.y/this.size);
+		Double gridX = Math.floor((float) p.x/this.size);
 		
-		return (gridY*gridX)-1;
+		return (gridY.intValue()*gridX.intValue());
 	}
 	
 	/**
@@ -155,6 +155,11 @@ public class Grid {
 	 * @param sprite
 	 */
 	private void addToCell(int pos, Sprite sprite) {
+		HashMap<Integer, Sprite> gridCell = this.grid[pos];
+		if(gridCell == null) {
+			gridCell = new HashMap<Integer, Sprite>();
+			this.grid[pos] = gridCell;
+		}
 		this.grid[pos].put(sprite.getGridId(), sprite);
 		HashSet<Integer> s = this.posMap.get(pos);
 		if(s == null) {
