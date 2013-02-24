@@ -79,9 +79,7 @@ public class Grid {
 	 */
 	public void update() throws GridException {
 		for(Sprite sprite : this.sprites) {
-			if(Sprite.SPRITE_STATE.MOVING.equals(sprite.getState())) {
-				updateSprite(sprite);
-			}
+			updateSprite(sprite);
 		}
 	}
 	
