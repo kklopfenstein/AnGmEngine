@@ -140,7 +140,8 @@ public class Grid {
 		if(cell != null && cell.size() > 0) {
 			Collection<Sprite> possibleSprites = cell.values();
 			for(Sprite s : possibleSprites) {
-				if(sprite.collided(s)) {
+				if(!s.equals(sprite) 
+						&& sprite.collided(s)) {
 					collisions.add(s);
 				}
 			}
