@@ -152,7 +152,7 @@ public abstract class Sprite {
 		if(this.getMaxX() < sprite.getX()) return false;
 		if(this.getX() > sprite.getMaxX()) return false;
 		if(this.getMaxY() < sprite.getY()) return false;
-		if(this.getY() > sprite.getY()) return false;
+		if(this.getY() > sprite.getMaxY()) return false;
 		return true;
 	}
 
