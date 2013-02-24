@@ -14,6 +14,8 @@ import com.kklop.angmengine.game.sprite.Sprite;
 
 /**
  * Sprite grid to help track object collisions.
+ * The limitation of this is that we can't reliably track objects
+ * that are larger than the grid size.
  * @author Kevin Klopfenstein
  *
  */
