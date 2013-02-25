@@ -20,7 +20,7 @@ public class GhostSprite extends AnimatedSprite {
 	
 	private enum HOVER_STATE { ASCENDING, DESCENDING }
 	
-	private HOVER_STATE state;
+	//private HOVER_STATE state;
 	
 	public GhostSprite(Context context, Bitmap bitmap, float x, float y, 
 			int width, int height,
@@ -30,11 +30,11 @@ public class GhostSprite extends AnimatedSprite {
 		this.hoverSpeed = hoverSpeed;
 		this.hoverTicker = 0l;
 		this.hoverPeriod = 1000/hoverSpeed;
-		state = HOVER_STATE.DESCENDING;
+		//state = HOVER_STATE.DESCENDING;
 	}
 	
 	public void update(long gameTime, float targetX, float targetY,
-			int speed) {
+			int speed, boolean center) {
 		super.update(gameTime);
 		if (gameTime > hoverTicker + hoverPeriod) { 
 			hoverTicker = gameTime;
@@ -57,12 +57,12 @@ public class GhostSprite extends AnimatedSprite {
 				break;
 		}*/
 		if(targetX != -1 && targetY != -1) {
-			this.move(gameTime, targetX, targetY, speed);
+			this.move(gameTime, targetX, targetY, speed, center);
 		}
 		
 	}
 	
-	private void updateHover() {
+	/*private void updateHover() {
 		switch(state) {
 		case ASCENDING:
 			hoverAscend();
@@ -72,9 +72,9 @@ public class GhostSprite extends AnimatedSprite {
 			break;
 		}
 		
-	}
+	}*/
 
-	private void hoverAscend() {
+	/*private void hoverAscend() {
 		if(hoverProgress <= 0) {
 			state = HOVER_STATE.DESCENDING;
 			Log.i(TAG, "Setting hover state to DESCENDING.");
@@ -95,6 +95,6 @@ public class GhostSprite extends AnimatedSprite {
 			y++;
 			hoverProgress++;
 		}
-	}
+	}*/
 
 }

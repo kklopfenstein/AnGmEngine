@@ -82,40 +82,48 @@ public abstract class Sprite {
 		state = SPRITE_STATE.STOPPED;
 	}
 	
-	public void update(Context context, Long gameTime, float targetX, 
-			float targetY, int speed) {
-		this.move(gameTime, targetX, targetY, speed);
+	public void update(Long gameTime, float targetX, 
+			float targetY, int speed, boolean center) {
+		this.move(gameTime, targetX, targetY, speed, center);
 	}
 	
-	protected void move(Long gameTime, float targetX, float targetY, float speed) {
+	protected void move(Long gameTime, float targetX, float targetY, float speed, boolean center) {
 		
-		double delta_x = (double) (this.x-targetX);
-		double delta_y = (double) (this.y-targetY);
-		
-		if(!(Math.abs(delta_x) < 1 && Math.abs(delta_y) < 1)) {
-		
-			state = SPRITE_STATE.MOVING;
+		if(targetX != -1 && targetY != -1) {
 			
-			double angle = Math.atan2(delta_y, delta_x);
-			if(targetX != this.targetX && targetY != this.targetY) {
-				// target has changed so store the original angle
-				this.startAngle = angle;
-				this.targetX = targetX;
-				this.targetY = targetY;
+			if(center) {
+				targetX -= getWidth()/2;
+				targetY -= getHeight()/2;
 			}
 			
-			if (gameTime > frameTicker + framePeriod) {
-				frameTicker = gameTime;
-				float difX = speed*(float)Math.cos(angle);
-				float difY = speed*(float)Math.sin(angle);
+			double delta_x = (double) (this.x-targetX);
+			double delta_y = (double) (this.y-targetY);
+			
+			if(!(Math.abs(delta_x) < 1 && Math.abs(delta_y) < 1)) {
+			
+				state = SPRITE_STATE.MOVING;
 				
-				x += -difX;
-				y += -difY;
+				double angle = Math.atan2(delta_y, delta_x);
+				if(targetX != this.targetX && targetY != this.targetY) {
+					// target has changed so store the original angle
+					this.startAngle = angle;
+					this.targetX = targetX;
+					this.targetY = targetY;
+				}
 				
+				if (gameTime > frameTicker + framePeriod) {
+					frameTicker = gameTime;
+					float difX = speed*(float)Math.cos(angle);
+					float difY = speed*(float)Math.sin(angle);
+					
+					x += -difX;
+					y += -difY;
+					
+				}
 			}
-		}
-		else {
-			state = SPRITE_STATE.STOPPED;
+			else {
+				state = SPRITE_STATE.STOPPED;
+			}
 		}
 	}
 	
@@ -270,5 +278,11 @@ public abstract class Sprite {
 		this.state = state;
 	}
 	
+	public float getCenterX() {
+		return x + bitmap.getWidth()/2;
+	}
 	
+	public float getCenterY() {
+		return y + bitmap.getHeight()/2;
+	}
 }

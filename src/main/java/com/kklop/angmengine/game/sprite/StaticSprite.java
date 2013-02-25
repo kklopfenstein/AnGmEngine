@@ -3,14 +3,13 @@ package com.kklop.angmengine.game.sprite;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.util.Log;
 
 public class StaticSprite extends Sprite {
 	
 	private static final String TAG = StaticSprite.class.getSimpleName();
 	
 	protected Bitmap bitmap;
-	protected float x;
-	protected float y;
 	
 	protected long frameTicker;	// the time of the last frame update
 	protected int framePeriod;	// milliseconds between each frame (1000/fps)
@@ -23,10 +22,10 @@ public class StaticSprite extends Sprite {
 		this.framePeriod = 1000/fps;
 	}
 	
-	public void update(Long gameTime, float targetX, float targetY, float speed) {
-		
-		double delta_x = (double) (this.x-targetX);
-		double delta_y = (double) (this.y-targetY);
+	public void update(Long gameTime, float targetX, float targetY, int speed, boolean center) {
+		super.update(gameTime, targetX, targetY, speed, center);
+		/*double delta_x = (double) (this.x-targetX);
+		double delta_y = (double) (this.y-targetY);*/
 		/*if(sign_x > 0 && sign_y > 0) {
 			radian_angle += Math.PI;
 		}
@@ -37,7 +36,7 @@ public class StaticSprite extends Sprite {
 			radian_angle += 3*Math.PI/2;
 		}*/
 		
-		double angle = Math.atan2(delta_y, delta_x);
+		/*double angle = Math.atan2(delta_y, delta_x);
 		
 		if (gameTime > frameTicker + framePeriod) {
 			frameTicker = gameTime;
@@ -47,11 +46,11 @@ public class StaticSprite extends Sprite {
 			x += difX;
 			y += difY;
 			
-		}
+		}*/
 	}
 	
 	@Override
 	public void draw(Canvas canvas) {
-		canvas.drawBitmap(bitmap, x, y, null);
+		canvas.drawBitmap(bitmap, getX(), getY(), null);
 	}
 }
