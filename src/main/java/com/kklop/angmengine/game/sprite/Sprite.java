@@ -103,7 +103,7 @@ public abstract class Sprite {
 			double delta_x = (double) (this.x-targetX);
 			double delta_y = (double) (this.y-targetY);
 			
-			if(!(Math.abs(delta_x) < 1 && Math.abs(delta_y) < 1)) {
+			if(!(Math.abs(delta_x) < speed && Math.abs(delta_y) < speed)) {
 			
 				state = SPRITE_STATE.MOVING;
 				
