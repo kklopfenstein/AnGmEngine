@@ -29,8 +29,8 @@ public class AnimatedSprite extends Sprite {
 	protected float targetY;
 	
 	public AnimatedSprite(Context context, Bitmap bitmap, float x, float y, 
-			int width, int height, int fps, int frameCount, int moveFps) {
-		super(context, bitmap, x, y, moveFps);
+			int width, int height, int fps, int frameCount, int moveFps, String type) {
+		super(context, bitmap, x, y, moveFps, type);
 		//this.bitmap = bitmap;
 		//this.x = x;
 		//this.y = y;

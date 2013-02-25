@@ -16,8 +16,8 @@ public class MapSprite extends StaticSprite {
 	private MAP_STATE state;
 	
 	public MapSprite(Context context, Bitmap bitmap, int x, int y, int fps, 
-			int screenHeight, int screenWidth) {
-		super(context, bitmap, x, y, fps);
+			int screenHeight, int screenWidth, String type) {
+		super(context, bitmap, x, y, fps, type);
 		this.screenHeight = screenHeight;
 		this.screenWidth = screenWidth;
 		state = MAP_STATE.STOPPED;

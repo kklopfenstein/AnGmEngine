@@ -24,8 +24,8 @@ public class GhostSprite extends AnimatedSprite {
 	
 	public GhostSprite(Context context, Bitmap bitmap, float x, float y, 
 			int width, int height,
-			int fps, int frameCount, int maxHover, int hoverSpeed, int moveFps) {
-		super(context, bitmap, x, y, width, height, fps, frameCount, moveFps);
+			int fps, int frameCount, int maxHover, int hoverSpeed, int moveFps, String type) {
+		super(context, bitmap, x, y, width, height, fps, frameCount, moveFps, type);
 		this.maxHover = maxHover;
 		this.hoverSpeed = hoverSpeed;
 		this.hoverTicker = 0l;

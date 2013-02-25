@@ -15,6 +15,8 @@ public abstract class Sprite {
 	protected Context context;
 	protected Bitmap bitmap;
 	
+	String type; // holds the type of the sprite
+	
 	protected float x;
 	protected float y;
 	
@@ -48,7 +50,7 @@ public abstract class Sprite {
 	 * @param y
 	 * @param fps
 	 */
-	public Sprite(Bitmap bitmap, float x, float y, int fps) {
+	public Sprite(Bitmap bitmap, float x, float y, int fps, String type) {
 		this.bitmap = bitmap;
 		this.x = x;
 		this.y = y;
@@ -59,9 +61,10 @@ public abstract class Sprite {
 		targetX = 0;
 		targetY = 0;
 		state = SPRITE_STATE.STOPPED;
+		this.type = type;
 	}
 	
-	public Sprite(Context context, Bitmap bitmap, float x, float y, int fps) {
+	public Sprite(Context context, Bitmap bitmap, float x, float y, int fps, String type) {
 		this.bitmap = bitmap;
 		this.x = x;
 		this.y = y;
@@ -80,6 +83,7 @@ public abstract class Sprite {
 		targetX = 0;
 		targetY = 0;
 		state = SPRITE_STATE.STOPPED;
+		this.type = type;
 	}
 	
 	public void update(Long gameTime, float targetX, 
@@ -284,5 +288,13 @@ public abstract class Sprite {
 	
 	public float getCenterY() {
 		return y + bitmap.getHeight()/2;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 }

@@ -14,8 +14,8 @@ public class StaticSprite extends Sprite {
 	protected long frameTicker;	// the time of the last frame update
 	protected int framePeriod;	// milliseconds between each frame (1000/fps)
 	
-	public StaticSprite(Context context, Bitmap bitmap, int x, int y, int fps) {
-		super(context, bitmap, x, y, fps);
+	public StaticSprite(Context context, Bitmap bitmap, int x, int y, int fps, String type) {
+		super(context, bitmap, x, y, fps, type);
 		this.bitmap = bitmap;
 		this.x = x;
 		this.y = y;
