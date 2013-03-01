@@ -3,6 +3,7 @@ package com.kklop.angmengine.game.sprite;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
@@ -43,7 +44,10 @@ public class AnimatedSprite extends Sprite {
 		anFrameTicker = 0l;
 	}
 	
-	public void update(long gameTime) {
+	@Override
+	public void update(Long gameTime, float targetX, float targetY, int speed,
+			boolean center) {
+		super.update(gameTime, targetX, targetY, speed, center);
 		if (gameTime > anFrameTicker + anFramePeriod) {
 			anFrameTicker = gameTime;
 			// increment the frame
@@ -60,21 +64,90 @@ public class AnimatedSprite extends Sprite {
 	@Override
 	public void draw(Canvas canvas) {
 		// where to draw the sprite
-		RectF destRect = new RectF(getDrawX(), getDrawY(), getDrawX() + spriteWidth, getDrawY() + spriteHeight);
+		RectF destRect = new RectF(
+				getDrawX(), 
+				getDrawY(), 
+				getDrawX() + spriteWidth, 
+				getDrawY() + spriteHeight
+			);
 		canvas.drawBitmap(bitmap, sourceRect, destRect, null);
 	}
 
 	private float getDrawX() {
-		return x-(spriteWidth);
+		//return x-(spriteWidth);
+		return x;
 	}
 	
 	private float getDrawY() {
-		return y-(spriteHeight);
+		//return y-(spriteHeight);
+		return y;
 	}
 	
 	@Override
 	public float getCompY() {
 		return getDrawY() + bitmap.getHeight();
+	}
+
+	@Override
+	public int getWidth() {
+		return spriteWidth;
+	}
+
+	@Override
+	public int getHeight() {
+		return spriteHeight;
+	}
+
+	@Override
+	public PointF getTopLeftCrnr() {
+		return new PointF(getDrawX(), getDrawY());
+	}
+
+	@Override
+	public PointF getTopRightCrnr() {
+		PointF p = null;
+		p = new PointF(getDrawX(), getDrawY() + spriteWidth);
+		return p;
+	}
+
+	@Override
+	public PointF getBotLeftCrnr() {
+		PointF p = null;
+		p = new PointF(getDrawX(), getDrawY()+ spriteHeight);
+		return p;
+	}
+
+	@Override
+	public PointF getBotRightCrnr() {
+		PointF p = null;
+		p = new PointF(getDrawX() + spriteWidth, 
+				getDrawY() + spriteHeight);
+		return p;
+	}
+
+	@Override
+	public float getX() {
+		return getDrawX();
+	}
+
+	@Override
+	public float getMaxX() {
+		return getX() + spriteWidth;
+	}
+
+	@Override
+	public float getMaxY() {
+		return getY() + spriteHeight;
+	}
+
+	@Override
+	public float getCenterX() {
+		return getDrawX() + spriteWidth/2;
+	}
+
+	@Override
+	public float getCenterY() {
+		return getDrawY() + spriteHeight/2;
 	}
 
 }

@@ -115,6 +115,12 @@ public abstract class Sprite {
 					this.targetY = targetY;
 				}
 				
+				/* this means that the motion should increment
+				 * every cetain number of frames, not every
+				 * time the method is called. This is because
+				 * this method could be called faster or
+				 * slower than the requires FPS.
+				 */
 				if (gameTime > frameTicker + framePeriod) {
 					frameTicker = gameTime;
 					float difX = speed*(float)Math.cos(angle);

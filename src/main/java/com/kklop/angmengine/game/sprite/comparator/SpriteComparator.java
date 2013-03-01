@@ -15,7 +15,7 @@ public class SpriteComparator implements Comparator<Sprite> {
 		int result = Float.valueOf(arg0.getCompY()).
 				compareTo(Float.valueOf(arg1.getCompY()));
 		if(result != 1) {
-			Log.i(TAG, "Comparing " + arg0.getCompY() + " to " 
+			Log.d(TAG, "Comparing " + arg0.getCompY() + " to " 
 					+ arg1.getCompY() +  " = " + result);
 		}
 		return result;
