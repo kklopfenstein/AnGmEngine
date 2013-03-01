@@ -1,11 +1,12 @@
 package com.kklop.angmengine.game.sprite;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
+
+import com.kklop.angmengine.game.sprite.bound.Bound;
 
 public class AnimatedSprite extends Sprite {
 	// height 60 width 30
@@ -23,18 +24,9 @@ public class AnimatedSprite extends Sprite {
 	protected int spriteWidth;	// the width of the sprite to calculate the cut out rectangle
 	protected int spriteHeight;	// the height of the sprite
 
-	//protected int x;				// the X coordinate of the object (top left of the image)
-	//protected int y;				// the Y coordinate of the object (top left of the image)
-	
-	protected float targetX;
-	protected float targetY;
-	
-	public AnimatedSprite(Context context, Bitmap bitmap, float x, float y, 
+	public AnimatedSprite(Bound bound, Bitmap bitmap, float x, float y, 
 			int width, int height, int fps, int frameCount, int moveFps, String type) {
-		super(context, bitmap, x, y, moveFps, type);
-		//this.bitmap = bitmap;
-		//this.x = x;
-		//this.y = y;
+		super(bound, bitmap, x, y, moveFps, type);
 		currentFrame = 0;
 		frameNr = frameCount;
 		spriteWidth = bitmap.getWidth() / frameCount;
@@ -149,5 +141,11 @@ public class AnimatedSprite extends Sprite {
 	public float getCenterY() {
 		return getDrawY() + spriteHeight/2;
 	}
+
+	@Override
+	public float getY() {
+		return getDrawY();
+	}
+	
 
 }

@@ -1,19 +1,21 @@
 package com.kklop.angmengine.game.sprite;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
-import android.view.WindowManager;
+
+import com.kklop.angmengine.game.sprite.bound.Bound;
 
 public abstract class Sprite {
 	
 	public static final String TAG = Sprite.class.getSimpleName();
 	
-	protected Context context;
 	protected Bitmap bitmap;
+	protected Bitmap normalBitmap;
+	protected Bitmap flipBitmap;
 	
 	String type; // holds the type of the sprite
 	
@@ -22,12 +24,13 @@ public abstract class Sprite {
 	
 	protected long frameTicker;	// the time of the last frame update
 	protected int framePeriod;	// milliseconds between each frame (1000/fps)
-	
-	int dWidth;
-	int dHeight;
+
+	protected Bound bound; // bound of object on map
 	
 	public enum SPRITE_STATE { MOVING, STOPPED }
+	public enum SPRITE_DIRECTION { EAST, WEST }
 	protected SPRITE_STATE state;
+	protected SPRITE_DIRECTION direction;
 	
 	protected double startAngle;
 	protected float targetX;
@@ -41,49 +44,26 @@ public abstract class Sprite {
 		Log.i(TAG, "Draw not implemented for Sprite");
 	}
 	
-	/**
-	 * Init sprite without the context, mostly
-	 * used for testing. Can't mock the window
-	 * service without API level 17 :(
-	 * @param bitmap
-	 * @param x
-	 * @param y
-	 * @param fps
-	 */
-	public Sprite(Bitmap bitmap, float x, float y, int fps, String type) {
+	public Sprite(Bound bound, Bitmap bitmap, float x, float y, int fps, 
+			String type) {
 		this.bitmap = bitmap;
+		this.normalBitmap = bitmap;
 		this.x = x;
 		this.y = y;
+		this.bound = bound;
+		if(bound != null) {
+			x = (bound.inBoundX(getX(), getWidth()));
+			y = (bound.inBoundY(getY(), getHeight()));
+		}
 		this.framePeriod = 1000/fps;
 		this.frameTicker = 0l;
-		
 		// probably should get set by constructor I guess
 		targetX = 0;
 		targetY = 0;
 		state = SPRITE_STATE.STOPPED;
 		this.type = type;
-	}
-	
-	public Sprite(Context context, Bitmap bitmap, float x, float y, int fps, String type) {
-		this.bitmap = bitmap;
-		this.x = x;
-		this.y = y;
-		this.framePeriod = 1000/fps;
-		this.frameTicker = 0l;
-		this.context = context;
-		
-		WindowManager wm = (WindowManager) context.
-				getSystemService(Context.WINDOW_SERVICE);
-		Display display = wm.getDefaultDisplay();
-		
-		this.dHeight = display.getHeight();
-		this.dWidth = display.getWidth();
-
-		// probably should get set by constructor I guess
-		targetX = 0;
-		targetY = 0;
-		state = SPRITE_STATE.STOPPED;
-		this.type = type;
+		// create the flipped bitmap
+		createFlipBitmap();
 	}
 	
 	public void update(Long gameTime, float targetX, 
@@ -91,7 +71,17 @@ public abstract class Sprite {
 		this.move(gameTime, targetX, targetY, speed, center);
 	}
 	
-	protected void move(Long gameTime, float targetX, float targetY, float speed, boolean center) {
+	/**
+	 * Move the object to certain point over time
+	 * at a speed.
+	 * @param gameTime
+	 * @param targetX
+	 * @param targetY
+	 * @param speed
+	 * @param center
+	 */
+	protected void move(Long gameTime, float targetX, float targetY, float speed, 
+			boolean center) {
 		
 		if(targetX != -1 && targetY != -1) {
 			
@@ -104,6 +94,15 @@ public abstract class Sprite {
 			double delta_y = (double) (this.y-targetY);
 			
 			if(!(Math.abs(delta_x) < speed && Math.abs(delta_y) < speed)) {
+				
+				// flip the bitmap if it's moving in one direction or the other
+				if(delta_x < 0) {
+					direction = SPRITE_DIRECTION.EAST;
+					bitmap = normalBitmap;
+				} else {
+					direction = SPRITE_DIRECTION.WEST;
+					bitmap = flipBitmap;
+				}
 			
 				state = SPRITE_STATE.MOVING;
 				
@@ -129,43 +128,39 @@ public abstract class Sprite {
 					x += -difX;
 					y += -difY;
 					
+					/* don't move past bounds. if we are
+					 * passed the bound, then move axis to
+					 * the edge of the bound
+					 */
+					if(bound != null) {
+						x = (bound.inBoundX(getX(), getWidth()));
+						y = (bound.inBoundY(getY(), getHeight()));
+					}
 				}
 			}
 			else {
-				state = SPRITE_STATE.STOPPED;
+				setX(targetX);
+				setY(targetY);
 			}
+		} else {
+			state = SPRITE_STATE.STOPPED;
 		}
 	}
 	
-	/*protected void moveX(Long gameTime, float targetX, float targetY, float speed) {
-		double delta_x = (double) (this.x-targetX);
-		double delta_y = (double) (this.y-targetY);
-		
-		double angle = Math.atan2(delta_y, delta_x);
-		
-		if (gameTime > frameTicker + framePeriod) {
-			frameTicker = gameTime;
-			float difX = speed*(float)Math.cos(angle);
-			
-			x -= difX;
-			
-		}
+	private void createFlipBitmap() {
+		Matrix m = new Matrix();
+		m.preScale(-1, 1);
+		flipBitmap = Bitmap.createBitmap(bitmap, 0, 0, 
+				bitmap.getWidth(), bitmap.getHeight(), 
+				m, false);
+		flipBitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
 	}
 	
-	protected void moveY(Long gameTime, float targetX, float targetY, float speed) {
-		double delta_x = (double) (this.x-targetX);
-		double delta_y = (double) (this.y-targetY);
-		
-		double angle = Math.atan2(delta_y, delta_x);
-		
-		if (gameTime > frameTicker + framePeriod) {
-			frameTicker = gameTime;
-			float difY = speed*(float)Math.sin(angle);
-			
-			y -= difY;
-		}
-	}*/
-	
+	/**
+	 * Detect if two sprites are colliding.
+	 * @param sprite
+	 * @return
+	 */
 	public boolean collided(Sprite sprite) {
 		if(this.getMaxX() < sprite.getX()) return false;
 		if(this.getX() > sprite.getMaxX()) return false;
@@ -174,14 +169,6 @@ public abstract class Sprite {
 		return true;
 	}
 
-	/**
-	 * Move sprite to center
-	 */
-	public void moveCenter() {
-		x = (dWidth/2 - (bitmap.getWidth()/2));
-		y = (dHeight/2 - (bitmap.getHeight()/2));
-	}
-	
 	public boolean onSprite(float x, float y) {
 		boolean result = false;
 		if((x>=this.x) && (x<(this.x+bitmap.getWidth())) &&

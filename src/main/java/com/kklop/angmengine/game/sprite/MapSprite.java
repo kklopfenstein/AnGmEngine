@@ -1,8 +1,9 @@
 package com.kklop.angmengine.game.sprite;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
+
+import com.kklop.angmengine.game.sprite.bound.Bound;
 
 public class MapSprite extends StaticSprite {
 	
@@ -15,9 +16,9 @@ public class MapSprite extends StaticSprite {
 	
 	private MAP_STATE state;
 	
-	public MapSprite(Context context, Bitmap bitmap, int x, int y, int fps, 
+	public MapSprite(Bound bound, Bitmap bitmap, int x, int y, int fps, 
 			int screenHeight, int screenWidth, String type) {
-		super(context, bitmap, x, y, fps, type);
+		super(bound, bitmap, x, y, fps, type);
 		this.screenHeight = screenHeight;
 		this.screenWidth = screenWidth;
 		state = MAP_STATE.STOPPED;
@@ -25,8 +26,8 @@ public class MapSprite extends StaticSprite {
 
 	public void update(Long gameTime, float targetX, float targetY, float speed) {
 		
-		double delta_x = (double) (this.dWidth-targetX);
-		double delta_y = (double) (this.dHeight-targetY);
+		double delta_x = (double) (bound.getBoundPoint().x-targetX);
+		double delta_y = (double) (bound.getBoundPoint().y-targetY);
 		
 		double angle = Math.atan2(delta_y, delta_x);
 		Log.i(TAG, "Angle is " + angle + " target is (" + targetX + ", " + targetY + ")");
