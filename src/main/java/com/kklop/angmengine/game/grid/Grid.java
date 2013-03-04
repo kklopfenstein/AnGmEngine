@@ -79,7 +79,8 @@ public class Grid {
 	 */
 	public void update() throws GridException {
 		for(Sprite sprite : this.sprites) {
-			if(Sprite.SPRITE_STATE.MOVING.equals(sprite.getState())) {
+			if(Sprite.SPRITE_STATE.MOVING.equals(sprite.getState())
+					|| Sprite.SPRITE_STATE.TRACK.equals(sprite.getState())) {
 				updateSprite(sprite);
 			}
 		}
@@ -90,7 +91,7 @@ public class Grid {
 	 * @param sprite
 	 * @throws GridException
 	 */
-	private void updateSprite(Sprite sprite) throws GridException {
+	public void updateSprite(Sprite sprite) throws GridException {
 		// remove sprite from grid
 		remove(sprite);
 		// re-insert into grid at new position
@@ -108,7 +109,7 @@ public class Grid {
 		Double gridY = Math.floor((float) p.y/this.size);
 		Double gridX = Math.floor((float) p.x/this.size);
 		
-		return (gridY.intValue()*gridX.intValue());
+		return ((this.width * gridY.intValue()) + gridX.intValue());
 	}
 	
 	/**
@@ -124,9 +125,15 @@ public class Grid {
 		
 		HashSet<Integer> cells = this.posMap.get(sprite.getGridId());
 		for(Integer i : cells) {
-			collisions.addAll(checkColsAtCell(i, sprite));
+			//for(int i=0;i<this.grid.length;i++) {
+				collisions.addAll(checkColsAtCell(i, sprite));
+			//}
 		}
 		return collisions;
+	}
+	
+	public HashSet<Integer> getCollisionCells(Sprite sprite) throws GridException {
+		return this.posMap.get(sprite.getGridId());
 	}
 	
 	/**
@@ -162,7 +169,7 @@ public class Grid {
 			this.grid[pos] = gridCell;
 		}
 		this.grid[pos].put(sprite.getGridId(), sprite);
-		HashSet<Integer> s = this.posMap.get(pos);
+		HashSet<Integer> s = this.posMap.get(sprite.getGridId());
 		if(s == null) {
 			s = new HashSet<Integer>();
 		}

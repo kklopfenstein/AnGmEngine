@@ -1,5 +1,7 @@
 package com.kklop.angmengine.game.sprite;
 
+import java.util.ArrayList;
+
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -7,7 +9,9 @@ import android.graphics.PointF;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
+import com.kklop.angmengine.game.exception.GameException;
 import com.kklop.angmengine.game.sprite.bound.Bound;
+import com.kklop.angmengine.game.sprite.hitbox.HitBox;
 
 public abstract class Sprite {
 	
@@ -27,14 +31,17 @@ public abstract class Sprite {
 
 	protected Bound bound; // bound of object on map
 	
-	public enum SPRITE_STATE { MOVING, STOPPED }
+	public enum SPRITE_STATE { MOVING, STOPPED, TRACK }
 	public enum SPRITE_DIRECTION { EAST, WEST }
 	protected SPRITE_STATE state;
 	protected SPRITE_DIRECTION direction;
+	protected enum MOVEMENT_AXIS { X, Y, BOTH }
 	
 	protected double startAngle;
 	protected float targetX;
 	protected float targetY;
+	
+	protected ArrayList<HitBox> hitBoxes;
 	
 	/* used by grid for identification
 	 * should not be manually set */
@@ -68,7 +75,20 @@ public abstract class Sprite {
 	
 	public void update(Long gameTime, float targetX, 
 			float targetY, int speed, boolean center) {
-		this.move(gameTime, targetX, targetY, speed, center);
+		this.move(gameTime, targetX, targetY, speed, center, 
+				MOVEMENT_AXIS.BOTH, false);
+	}
+	
+	public void moveX(Long gameTime, float targetX, 
+			float targetY, int speed, boolean center) {
+		this.move(gameTime, targetX, targetY, speed, center, 
+				MOVEMENT_AXIS.X, true);
+	}
+	
+	public void moveY(Long gameTime, float targetX, 
+			float targetY, int speed, boolean center) {
+		this.move(gameTime, targetX, targetY, speed, center, 
+				MOVEMENT_AXIS.Y, true);
 	}
 	
 	/**
@@ -81,7 +101,7 @@ public abstract class Sprite {
 	 * @param center
 	 */
 	protected void move(Long gameTime, float targetX, float targetY, float speed, 
-			boolean center) {
+			boolean center, MOVEMENT_AXIS axis, boolean override) {
 		
 		if(targetX != -1 && targetY != -1) {
 			
@@ -119,14 +139,24 @@ public abstract class Sprite {
 				 * time the method is called. This is because
 				 * this method could be called faster or
 				 * slower than the requires FPS.
+				 * 
+				 * This check can be overridden, but be careful!
 				 */
-				if (gameTime > frameTicker + framePeriod) {
+				if ((gameTime > frameTicker + framePeriod) || override) {
 					frameTicker = gameTime;
 					float difX = speed*(float)Math.cos(angle);
 					float difY = speed*(float)Math.sin(angle);
 					
-					x += -difX;
-					y += -difY;
+					// if axis is specified, move only on that axis
+					if(MOVEMENT_AXIS.X.equals(axis)) {
+						x += -difX;
+					} else if(MOVEMENT_AXIS.Y.equals(axis)){
+						y += -difY;
+					} else {
+						x += -difX;
+						y += -difY;
+					}
+					
 					
 					/* don't move past bounds. if we are
 					 * passed the bound, then move axis to
@@ -157,26 +187,98 @@ public abstract class Sprite {
 	}
 	
 	/**
-	 * Detect if two sprites are colliding.
+	 * Detect if two sprites are colliding using hitboxes
+	 * if applicable. Otherwise use raw x,y values.
+	 * This method can be O(n^2) if there are too many hitboxes
+	 * so it would be best to limit them.
 	 * @param sprite
 	 * @return
 	 */
 	public boolean collided(Sprite sprite) {
-		if(this.getMaxX() < sprite.getX()) return false;
-		if(this.getX() > sprite.getMaxX()) return false;
-		if(this.getMaxY() < sprite.getY()) return false;
-		if(this.getY() > sprite.getMaxY()) return false;
+		if(this.hitBoxes != null && this.hitBoxes.size() > 0) {
+			for(HitBox box : hitBoxes) {
+				if(isBoxCollidedWithSprite(box, sprite)) {
+					return true;
+				}
+			}
+			return false;
+		} else if(sprite.getHitBoxes() != null && 
+				sprite.getHitBoxes().size() > 0) {
+			/* this sprite doesn't have hitboxes
+			 * but the comparing sprite does.
+			 * Create a hit box with this sprites
+			 * raw data.
+			 */
+			return isBoxCollidedWithSprite(new HitBox(0, 0, getWidth(), 
+					getHeight()), sprite);
+		} else {
+			/* no hitboxes for either sprite, so
+			 * only compare the raw vals
+			 */
+			return rawCollided(sprite);
+		}
+	}
+	
+	private boolean isBoxCollidedWithSprite(HitBox box, Sprite sprite) {
+		if((sprite.getHitBoxes() == null || 
+				sprite.getHitBoxes().size() == 0)) {
+			/* comparing sprite has no hitboxes
+			 * so compare this sprites hitboxes against
+			 * the comparing sprites raw values
+			 */
+			if(isCollided(box.getX(this), box.getY(this),
+					box.getxMax(this), box.getyMax(this), 
+					sprite.getX(), sprite.getY(), sprite.getMaxX(), 
+					sprite.getMaxY())) {
+				return true;
+			}
+		} else {
+			/* comparing sprite has hitboxes, so
+			 * compare current hitbox against
+			 * every one of the sprites hitboxes
+			 */
+			for(HitBox sBox : sprite.getHitBoxes()) {
+				if(isCollided(box.getX(this), box.getY(this),
+						box.getxMax(this), box.getyMax(this), 
+						sBox.getX(sprite), sBox.getY(sprite), 
+						sBox.getxMax(sprite), sBox.getyMax(sprite))) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Collision based on bitmap boundaries
+	 * @return
+	 */
+	private boolean rawCollided(Sprite sprite) {
+		return isCollided(getX(), getY(), getMaxX(), getMaxY(), sprite.getX(), 
+				sprite.getY(), sprite.getMaxX(), sprite.getMaxY());
+	}
+	
+	private boolean isCollided(float x, float y, float maxX, float maxY, 
+			float x2, float y2, float maxX2, float maxY2) {
+		if(maxX < x2) return false;
+		if(x > maxX2) return false;
+		if(maxY < y2) return false;
+		if(y > maxY2) return false;
 		return true;
 	}
-
-	public boolean onSprite(float x, float y) {
-		boolean result = false;
-		if((x>=this.x) && (x<(this.x+bitmap.getWidth())) &&
-				((y>=this.y && (y<(this.y+bitmap.getHeight()))))) {
-			result = true;
+	
+	/**
+	 * Add hitbox to sprite
+	 * @param box
+	 * @throws GameException
+	 */
+	public void addHitbox(HitBox box) throws GameException {
+		if(hitBoxes == null) {
+			hitBoxes = new ArrayList<HitBox>();
 		}
-		return result;
+		hitBoxes.add(box);
 	}
+	
 
 	public Bitmap getBitmap() {
 		return bitmap;
@@ -289,5 +391,9 @@ public abstract class Sprite {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public ArrayList<HitBox> getHitBoxes() {
+		return hitBoxes;
 	}
 }

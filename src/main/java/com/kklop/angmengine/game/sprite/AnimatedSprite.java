@@ -98,7 +98,7 @@ public class AnimatedSprite extends Sprite {
 	@Override
 	public PointF getTopRightCrnr() {
 		PointF p = null;
-		p = new PointF(getDrawX(), getDrawY() + spriteWidth);
+		p = new PointF(getDrawX() + spriteWidth, getDrawY());
 		return p;
 	}
 

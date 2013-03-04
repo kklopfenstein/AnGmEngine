@@ -9,7 +9,7 @@ public class GridException extends GameException {
 	 */
 	private static final long serialVersionUID = 8606541898162474547L;
 
-	public GridException(Throwable e) {
+	public GridException(Exception e) {
 		super(e);
 	}
 	

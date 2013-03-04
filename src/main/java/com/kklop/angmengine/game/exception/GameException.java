@@ -12,7 +12,7 @@ public class GameException extends Exception {
 	 */
 	private static final long serialVersionUID = -6694980273686843216L;
 
-	public GameException(Throwable e) {
+	public GameException(Exception e) {
 		super(e);
 	}
 	
