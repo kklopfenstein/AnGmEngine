@@ -177,7 +177,7 @@ public abstract class Sprite {
 		}
 	}
 	
-	private void createFlipBitmap() {
+	protected void createFlipBitmap() {
 		Matrix m = new Matrix();
 		m.preScale(-1, 1);
 		flipBitmap = Bitmap.createBitmap(bitmap, 0, 0, 
