@@ -35,7 +35,7 @@ public abstract class Sprite {
 	public enum SPRITE_DIRECTION { EAST, WEST }
 	protected SPRITE_STATE state;
 	protected SPRITE_DIRECTION direction;
-	protected enum MOVEMENT_AXIS { X, Y, BOTH }
+	public enum MOVEMENT_AXIS { X, Y, BOTH }
 	
 	protected double startAngle;
 	protected float targetX;
@@ -124,8 +124,6 @@ public abstract class Sprite {
 					bitmap = flipBitmap;
 				}
 			
-				state = SPRITE_STATE.MOVING;
-				
 				double angle = Math.atan2(delta_y, delta_x);
 				if(targetX != this.targetX && targetY != this.targetY) {
 					// target has changed so store the original angle
@@ -134,39 +132,7 @@ public abstract class Sprite {
 					this.targetY = targetY;
 				}
 				
-				/* this means that the motion should increment
-				 * every cetain number of frames, not every
-				 * time the method is called. This is because
-				 * this method could be called faster or
-				 * slower than the requires FPS.
-				 * 
-				 * This check can be overridden, but be careful!
-				 */
-				if ((gameTime > frameTicker + framePeriod) || override) {
-					frameTicker = gameTime;
-					float difX = speed*(float)Math.cos(angle);
-					float difY = speed*(float)Math.sin(angle);
-					
-					// if axis is specified, move only on that axis
-					if(MOVEMENT_AXIS.X.equals(axis)) {
-						x += -difX;
-					} else if(MOVEMENT_AXIS.Y.equals(axis)){
-						y += -difY;
-					} else {
-						x += -difX;
-						y += -difY;
-					}
-					
-					
-					/* don't move past bounds. if we are
-					 * passed the bound, then move axis to
-					 * the edge of the bound
-					 */
-					if(bound != null) {
-						x = (bound.inBoundX(getX(), getWidth()));
-						y = (bound.inBoundY(getY(), getHeight()));
-					}
-				}
+				moveTowardAngle(angle, gameTime, speed, override, axis);
 			}
 			else {
 				setX(targetX);
@@ -174,6 +140,53 @@ public abstract class Sprite {
 			}
 		} else {
 			state = SPRITE_STATE.STOPPED;
+		}
+	}
+	
+	/**
+	 * Move toward a specific angle
+	 * @param angle
+	 * @param gameTime
+	 * @param speed
+	 * @param override
+	 * @param axis
+	 */
+	public void moveTowardAngle(double angle, long gameTime, 
+			float speed, boolean override, MOVEMENT_AXIS axis) {
+		
+		state = SPRITE_STATE.MOVING;
+		
+		/* this means that the motion should increment
+		 * every cetain number of frames, not every
+		 * time the method is called. This is because
+		 * this method could be called faster or
+		 * slower than the requires FPS.
+		 * 
+		 * This check can be overridden, but be careful!
+		 */
+		if ((gameTime > frameTicker + framePeriod) || override) {
+			frameTicker = gameTime;
+			float difX = speed*(float)Math.cos(angle);
+			float difY = speed*(float)Math.sin(angle);
+			
+			// if axis is specified, move only on that axis
+			if(MOVEMENT_AXIS.X.equals(axis)) {
+				x += -difX;
+			} else if(MOVEMENT_AXIS.Y.equals(axis)){
+				y += -difY;
+			} else {
+				x += -difX;
+				y += -difY;
+			}
+			
+			/* don't move past bounds. if we are
+			 * passed the bound, then move axis to
+			 * the edge of the bound
+			 */
+			if(bound != null) {
+				x = (bound.inBoundX(getX(), getWidth()));
+				y = (bound.inBoundY(getY(), getHeight()));
+			}
 		}
 	}
 	
@@ -247,6 +260,16 @@ public abstract class Sprite {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Check if single point is colliding with sprite
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public boolean pointCollision(float x, float y) {
+		return isCollided(getX(), getY(), getMaxX(), getMaxY(), x, y, x, y);
 	}
 	
 	/**

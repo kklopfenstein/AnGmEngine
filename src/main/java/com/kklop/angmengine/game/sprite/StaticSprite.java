@@ -9,7 +9,7 @@ public class StaticSprite extends Sprite {
 	
 	private static final String TAG = StaticSprite.class.getSimpleName();
 	
-	public StaticSprite(Bound bound, Bitmap bitmap, int x, int y, int fps, 
+	public StaticSprite(Bound bound, Bitmap bitmap, float x, float y, int fps, 
 			String type) {
 		super(bound, bitmap, x, y, fps, type);
 	}

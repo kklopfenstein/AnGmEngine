@@ -17,9 +17,9 @@ public class RectBound extends Bound {
 	@Override
 	public Float inBoundX(Float x, int spriteWidth) {
 		Float result = x;
-		if((x + spriteWidth) > right.x) {
-			result = right.x - spriteWidth;
-		} else if (x < left.x){
+		if((x + spriteWidth) >= right.x) {
+			result = right.x - spriteWidth - 1;
+		} else if (x <= left.x){
 			result = left.x;
 		}
 		return result;
@@ -28,9 +28,9 @@ public class RectBound extends Bound {
 	@Override
 	public Float inBoundY(Float y, int spriteHeight) {
 		Float result = y;
-		if((y + spriteHeight) > right.y) {
-			result = right.y - spriteHeight;
-		} else if (y < left.y){
+		if((y + spriteHeight) >= right.y) {
+			result = right.y - spriteHeight - 1;
+		} else if (y <= left.y){
 			result = left.y;
 		}
 		return result;

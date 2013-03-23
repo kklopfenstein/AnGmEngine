@@ -207,4 +207,14 @@ public class Grid {
 		posMap.remove(sprite.getGridId());
 	}
 	
+	/**
+	 * Remove sprite from grid
+	 * @param sprite
+	 */
+	public void removeFromGrid(Sprite sprite) {
+		// note: this is not very efficient, will have to loop over entire list
+		sprites.remove(sprite);
+		remove(sprite);
+	}
+	
 }
