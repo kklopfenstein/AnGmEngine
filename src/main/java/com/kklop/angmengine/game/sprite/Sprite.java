@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.kklop.angmengine.game.exception.GameException;
 import com.kklop.angmengine.game.sprite.bound.Bound;
+import com.kklop.angmengine.game.sprite.bound.rect.RectBound;
 import com.kklop.angmengine.game.sprite.hitbox.HitBox;
 
 public abstract class Sprite {
@@ -46,6 +47,10 @@ public abstract class Sprite {
 	/* used by grid for identification
 	 * should not be manually set */
 	protected Integer gridId = null;
+	
+	public void draw(Canvas canvas, RectBound bound) {
+		Log.i(TAG, "Draw not implemented for Sprite");
+	}
 	
 	public void draw(Canvas canvas) {
 		Log.i(TAG, "Draw not implemented for Sprite");
@@ -281,13 +286,31 @@ public abstract class Sprite {
 				sprite.getY(), sprite.getMaxX(), sprite.getMaxY());
 	}
 	
-	private boolean isCollided(float x, float y, float maxX, float maxY, 
+	public static boolean isCollided(float x, float y, float maxX, float maxY, 
 			float x2, float y2, float maxX2, float maxY2) {
 		if(maxX < x2) return false;
 		if(x > maxX2) return false;
 		if(maxY < y2) return false;
 		if(y > maxY2) return false;
 		return true;
+	}
+	
+	/**
+	 * Is sprite collided with bound
+	 * @param b
+	 * @return
+	 */
+	public boolean isInBound(RectBound b) {
+		return isCollided(
+				getX(), 
+				getY(), 
+				getMaxX(), 
+				getMaxY(), 
+				b.getLeft().x, 
+				b.getLeft().y, 
+				b.getRight().x, 
+				b.getRight().y
+			);
 	}
 	
 	/**

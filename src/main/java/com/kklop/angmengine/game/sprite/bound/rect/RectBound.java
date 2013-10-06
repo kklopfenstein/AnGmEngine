@@ -41,4 +41,12 @@ public class RectBound extends Bound {
 		return right;
 	}
 
+	public PointF getLeft() {
+		return left;
+	}
+
+	public PointF getRight() {
+		return right;
+	}
+
 }

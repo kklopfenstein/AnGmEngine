@@ -14,6 +14,7 @@ public class MapSprite extends StaticSprite {
 	
 	public static enum MAP_STATE { MOVEMENT, FREEZE_X, FREEZE_Y, FREEZE_BOTH, STOPPED }
 	
+	@SuppressWarnings("unused")
 	private MAP_STATE state;
 	
 	public MapSprite(Bound bound, Bitmap bitmap, int x, int y, int fps, 

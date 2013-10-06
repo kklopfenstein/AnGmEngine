@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 
 import com.kklop.angmengine.game.sprite.bound.Bound;
+import com.kklop.angmengine.game.sprite.bound.rect.RectBound;
 
 public class AnimatedSprite extends Sprite {
 	
@@ -16,8 +17,6 @@ public class AnimatedSprite extends Sprite {
 	
 	// height 60 width 30
 	// so 5 frames will need to be 30*5=150px
-	
-	private static final String TAG = AnimatedSprite.class.getSimpleName();
 	
 	//protected Bitmap bitmap;		// the animation sequence
 	protected Rect sourceRect;	// the rectangle to be drawn from the animation bitmap
@@ -64,6 +63,20 @@ public class AnimatedSprite extends Sprite {
 		this.sourceRect.right = this.sourceRect.left + spriteWidth;
 	}
 
+	@Override
+	public void draw(Canvas canvas, RectBound bound) {
+		if(isInBound(bound)) {
+			// where to draw the sprite
+			RectF destRect = new RectF(
+					getDrawX(), 
+					getDrawY(), 
+					getDrawX() + spriteWidth, 
+					getDrawY() + spriteHeight
+				);
+			canvas.drawBitmap(bitmap, sourceRect, destRect, null);
+		}
+	}
+	
 	@Override
 	public void draw(Canvas canvas) {
 		// where to draw the sprite
