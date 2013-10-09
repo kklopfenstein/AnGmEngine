@@ -2,12 +2,15 @@ package com.kklop.angmengine.game.sprite;
 
 import java.util.PriorityQueue;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
+import com.kklop.angmengine.game.bitmap.cache.BitmapCache;
+import com.kklop.angmengine.game.exception.GameException;
 import com.kklop.angmengine.game.sprite.bound.Bound;
 import com.kklop.angmengine.game.sprite.bound.rect.RectBound;
 
@@ -29,10 +32,10 @@ public class AnimatedSprite extends Sprite {
 	protected int spriteHeight;	// the height of the sprite
 	protected boolean loop;    // should the animation loop
 
-	public AnimatedSprite(Bound bound, Bitmap bitmap, float x, float y, 
+	public AnimatedSprite(Bound bound, int bmp, float x, float y, 
 			int width, int height, int fps, int frameCount, int moveFps, 
-			String type, boolean loop) {
-		super(bound, bitmap, x, y, moveFps, type);
+			String type, boolean loop, Resources res) throws GameException {
+		super(bound, bmp, x, y, moveFps, type, res);
 		currentFrame = 0;
 		frameNr = frameCount;
 		spriteWidth = bitmap.getWidth() / frameCount;
@@ -45,7 +48,7 @@ public class AnimatedSprite extends Sprite {
 	
 	@Override
 	public void update(Long gameTime, float targetX, float targetY, int speed,
-			boolean center) {
+			boolean center) throws GameException {
 		super.update(gameTime, targetX, targetY, speed, center);
 		if (gameTime > anFrameTicker + anFramePeriod) {
 			anFrameTicker = gameTime;
@@ -102,20 +105,21 @@ public class AnimatedSprite extends Sprite {
 	 * @param loop
 	 * @param interrupt
 	 */
-	public void addAnimation(Bitmap _bitmap, int width, int height, 
+	public void addAnimation(int bmp, int width, int height, 
 			int fps, int frameCount, int moveFps, String type, boolean loop,
-			boolean interrupt) {
+			boolean interrupt, Resources res) throws GameException {
 		int currentFrame = 0;
 		int frameNr = frameCount;
+		Bitmap _bitmap = BitmapCache.getInstance().getBitmapFromCache(res, bmp);
 		int spriteWidth = _bitmap.getWidth() / frameCount;
 		int spriteHeight = _bitmap.getHeight();
 		Rect sourceRect = new Rect(0, 0, spriteWidth, spriteHeight);
 		int anFramePeriod = 1000 / fps;
 		long anFrameTicker = 0l;
 		
-		SpriteAnimation an = new SpriteAnimation(_bitmap, sourceRect, frameNr,
+		SpriteAnimation an = new SpriteAnimation(bmp, sourceRect, frameNr,
 				currentFrame, anFrameTicker, anFramePeriod, spriteWidth,
-				spriteHeight, loop);
+				spriteHeight, loop, res);
 		
 		if(interrupt) {
 			loadSpriteAnimation(an);
@@ -124,9 +128,9 @@ public class AnimatedSprite extends Sprite {
 		}
 	}
 	
-	private void loadSpriteAnimation(SpriteAnimation an) {
-		this.bitmap = an.bitmap;
-		this.normalBitmap = an.bitmap;
+	private void loadSpriteAnimation(SpriteAnimation an) throws GameException {
+		this.bitmap = BitmapCache.getInstance().getBitmapFromCache(an.res, an.bmp);
+		this.normalBitmap = this.bitmap;
 		this.sourceRect = an.sourceRect;
 		this.frameNr = an.frameNr;
 		this.currentFrame = an.currentFrame;
@@ -135,7 +139,7 @@ public class AnimatedSprite extends Sprite {
 		this.spriteWidth = an.spriteWidth;
 		this.spriteHeight = an.spriteHeight;
 		this.loop = an.loop;
-		createFlipBitmap();
+		this.flipBitmap = BitmapCache.getInstance().getFlipBitmapFromCache(an.res, an.bmp);
 		// handle direction so we don't revert to default
 		if(direction == SPRITE_DIRECTION.EAST) {
 			this.bitmap = normalBitmap;

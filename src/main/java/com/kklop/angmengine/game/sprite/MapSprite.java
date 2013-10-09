@@ -1,8 +1,9 @@
 package com.kklop.angmengine.game.sprite;
 
-import android.graphics.Bitmap;
+import android.content.res.Resources;
 import android.util.Log;
 
+import com.kklop.angmengine.game.exception.GameException;
 import com.kklop.angmengine.game.sprite.bound.Bound;
 
 public class MapSprite extends StaticSprite {
@@ -17,9 +18,9 @@ public class MapSprite extends StaticSprite {
 	@SuppressWarnings("unused")
 	private MAP_STATE state;
 	
-	public MapSprite(Bound bound, Bitmap bitmap, int x, int y, int fps, 
-			int screenHeight, int screenWidth, String type) {
-		super(bound, bitmap, x, y, fps, type);
+	public MapSprite(Bound bound, int bmp, int x, int y, int fps, 
+			int screenHeight, int screenWidth, String type, Resources res) throws GameException {
+		super(bound, bmp, x, y, fps, type, res);
 		this.screenHeight = screenHeight;
 		this.screenWidth = screenWidth;
 		state = MAP_STATE.STOPPED;

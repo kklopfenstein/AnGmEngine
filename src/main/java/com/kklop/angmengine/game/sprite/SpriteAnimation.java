@@ -1,6 +1,6 @@
 package com.kklop.angmengine.game.sprite;
 
-import android.graphics.Bitmap;
+import android.content.res.Resources;
 import android.graphics.Rect;
 
 /**
@@ -10,7 +10,7 @@ import android.graphics.Rect;
  */
 public class SpriteAnimation {
 
-	protected Bitmap bitmap;    // bitmap
+	protected int bmp;    // bitmap
 	protected Rect sourceRect;	// the rectangle to be drawn from bitmap
 	protected int frameNr;		// number of frames in animation
 	protected int currentFrame;	// the current frame
@@ -19,12 +19,13 @@ public class SpriteAnimation {
 	protected int spriteWidth;	// the width of the sprite to calculate the cut out rectangle
 	protected int spriteHeight;	// the height of the sprite
 	protected boolean loop; // should the animation loop
+	protected Resources res; // android resources for loading bmps
 
-	public SpriteAnimation(Bitmap bitmap, Rect sourceRect, int frameNr,
+	public SpriteAnimation(int bmp, Rect sourceRect, int frameNr,
 			int currentFrame, long anFrameTicker, int anFramePeriod,
-			int spriteWidth, int spriteHeight, boolean loop) {
+			int spriteWidth, int spriteHeight, boolean loop, Resources res) {
 		super();
-		this.bitmap = bitmap;
+		this.bmp = bmp;
 		this.sourceRect = sourceRect;
 		this.frameNr = frameNr;
 		this.currentFrame = currentFrame;
@@ -33,6 +34,7 @@ public class SpriteAnimation {
 		this.spriteWidth = spriteWidth;
 		this.spriteHeight = spriteHeight;
 		this.loop = loop;
+		this.res = res;
 	}
 	
 }

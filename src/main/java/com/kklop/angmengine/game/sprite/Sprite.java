@@ -2,13 +2,13 @@ package com.kklop.angmengine.game.sprite;
 
 import java.util.ArrayList;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.PointF;
-import android.util.DisplayMetrics;
 import android.util.Log;
 
+import com.kklop.angmengine.game.bitmap.cache.BitmapCache;
 import com.kklop.angmengine.game.exception.GameException;
 import com.kklop.angmengine.game.sprite.bound.Bound;
 import com.kklop.angmengine.game.sprite.bound.rect.RectBound;
@@ -56,9 +56,9 @@ public abstract class Sprite {
 		Log.i(TAG, "Draw not implemented for Sprite");
 	}
 	
-	public Sprite(Bound bound, Bitmap bitmap, float x, float y, int fps, 
-			String type) {
-		this.bitmap = bitmap;
+	public Sprite(Bound bound, int bmp, float x, float y, int fps, 
+			String type, Resources res) throws GameException {
+		this.bitmap = BitmapCache.getInstance().getBitmapFromCache(res, bmp);
 		this.normalBitmap = bitmap;
 		this.x = x;
 		this.y = y;
@@ -75,11 +75,11 @@ public abstract class Sprite {
 		state = SPRITE_STATE.STOPPED;
 		this.type = type;
 		// create the flipped bitmap
-		createFlipBitmap();
+		this.flipBitmap = BitmapCache.getInstance().getFlipBitmapFromCache(res, bmp);
 	}
 	
 	public void update(Long gameTime, float targetX, 
-			float targetY, int speed, boolean center) {
+			float targetY, int speed, boolean center) throws GameException {
 		this.move(gameTime, targetX, targetY, speed, center, 
 				MOVEMENT_AXIS.BOTH, false);
 	}
@@ -195,13 +195,13 @@ public abstract class Sprite {
 		}
 	}
 	
-	protected void createFlipBitmap() {
-		Matrix m = new Matrix();
-		m.preScale(-1, 1);
-		flipBitmap = Bitmap.createBitmap(bitmap, 0, 0, 
-				bitmap.getWidth(), bitmap.getHeight(), 
-				m, false);
-		flipBitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
+	/**
+	 * Detect if two sprites are colliding using hitboxes
+	 * @param sprite
+	 * @return
+	 */
+	public boolean collided(Sprite sprite) {
+		return collided(sprite, true);
 	}
 	
 	/**
@@ -209,11 +209,14 @@ public abstract class Sprite {
 	 * if applicable. Otherwise use raw x,y values.
 	 * This method can be O(n^2) if there are too many hitboxes
 	 * so it would be best to limit them.
+	 * 
+	 * Hitbox usage can be disabled
+	 * 
 	 * @param sprite
 	 * @return
 	 */
-	public boolean collided(Sprite sprite) {
-		if(this.hitBoxes != null && this.hitBoxes.size() > 0) {
+	public boolean collided(Sprite sprite, boolean useHitBoxes) {
+		if(this.hitBoxes != null && this.hitBoxes.size() > 0 && useHitBoxes) {
 			for(HitBox box : hitBoxes) {
 				if(isBoxCollidedWithSprite(box, sprite)) {
 					return true;
@@ -221,7 +224,7 @@ public abstract class Sprite {
 			}
 			return false;
 		} else if(sprite.getHitBoxes() != null && 
-				sprite.getHitBoxes().size() > 0) {
+				sprite.getHitBoxes().size() > 0 && useHitBoxes) {
 			/* this sprite doesn't have hitboxes
 			 * but the comparing sprite does.
 			 * Create a hit box with this sprites

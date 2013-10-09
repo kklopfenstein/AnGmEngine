@@ -114,10 +114,21 @@ public class Grid {
 	
 	/**
 	 * Return a list of cells where
+	 * collisions are possible using hit boxes.
+	 * @param sprite
+	 * @return
+	 * @throws GridException
+	 */
+	public List<Sprite> getCollisions(Sprite sprite) throws GridException {
+		return getCollisions(sprite, true);
+	}
+	
+	/**
+	 * Return a list of cells where
 	 * collisions are possible.
 	 * @return
 	 */
-	public List<Sprite> getCollisions(Sprite sprite) throws GridException {
+	public List<Sprite> getCollisions(Sprite sprite, boolean useHitBoxes) throws GridException {
 		List<Sprite> collisions = new ArrayList<Sprite>();
 		if(sprite.getGridId() == null) {
 			throw new GridException("Sprite has not been added to the grid.");
@@ -126,7 +137,7 @@ public class Grid {
 		HashSet<Integer> cells = this.posMap.get(sprite.getGridId());
 		for(Integer i : cells) {
 			//for(int i=0;i<this.grid.length;i++) {
-				collisions.addAll(checkColsAtCell(i, sprite));
+				collisions.addAll(checkColsAtCell(i, sprite, useHitBoxes));
 			//}
 		}
 		return collisions;
@@ -141,14 +152,14 @@ public class Grid {
 	 * @param pos
 	 * @param sprite
 	 */
-	private List<Sprite> checkColsAtCell(int pos, Sprite sprite) {
+	private List<Sprite> checkColsAtCell(int pos, Sprite sprite, boolean useHitBoxes) {
 		List<Sprite> collisions = new ArrayList<Sprite>();
 		HashMap<Integer, Sprite> cell = this.grid[pos];
 		if(cell != null && cell.size() > 0) {
 			Collection<Sprite> possibleSprites = cell.values();
 			for(Sprite s : possibleSprites) {
 				if(!s.equals(sprite) 
-						&& sprite.collided(s)) {
+						&& sprite.collided(s, useHitBoxes)) {
 					collisions.add(s);
 				}
 			}
