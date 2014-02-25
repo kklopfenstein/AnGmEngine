@@ -37,7 +37,7 @@ public class GridMap implements Map {
 		this.mapSizeWidth = mapSizeWidth;
 		this.mapSizeHeight = mapSizeHeight;
 		this.mapBuilder = mapBuilder;
-		this.gridCellSize = gridCellSize;
+		this.gridCellSize = mapBuilder.getWidth()/gridCellSize;
 		buildSourceRects();
 		buildRandomMap();
 	}
@@ -113,6 +113,14 @@ public class GridMap implements Map {
 				}
 			}
 		}
+	}
+	
+	public int getWdith() {
+		return mapSizeWidth * gridCellSize;
+	}
+	
+	public int getHeight() {
+		return mapSizeWidth * gridCellSize;
 	}
 
 }
