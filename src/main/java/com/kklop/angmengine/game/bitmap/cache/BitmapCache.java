@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.util.DisplayMetrics;
-import android.util.LruCache;
 
 import com.kklop.angmengine.game.exception.GameException;
 
